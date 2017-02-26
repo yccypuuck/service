@@ -43,9 +43,9 @@ int main()
     while (1) {
         cout << "=> Waiting for client..." << endl;
         int clientSocket = client_accept();
-        if (clientSocket < 0) {
-            continue;
-        }
+//        if (clientSocket < 0) {
+//            continue;
+//        }
         client_receive(clientSocket);
         client_close(clientSocket);
     }
