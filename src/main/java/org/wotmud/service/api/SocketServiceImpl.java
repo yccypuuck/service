@@ -4,42 +4,40 @@
 package org.wotmud.service.api;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
-public class Main {
+//@Service
+public class SocketServiceImpl implements SocketService {
 
-	private static final int BUF_SIZE = 1024;
-	private static BufferedReader buf;
-	private static OutputStreamWriter osw;
+	private final int BUF_SIZE = 1024;
+	private String hostname = "localhost";
+	private int portnum = 1500;
+	private BufferedReader buf;
+	private OutputStreamWriter osw;
+	Socket socket;
 
-	public void main(String[] args) throws Exception {
-		Socket socket;
+//	@Autowired
+	public SocketServiceImpl() throws Exception {
 		DataInputStream input;
 
-
-		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-
-
 		try {
+			socket = new Socket(hostname, portnum);
 
-			socket = new Socket("localhost", 1500);
-
-			input = new DataInputStream(socket.getInputStream());
 			osw = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
 
-
+			input = new DataInputStream(socket.getInputStream());
 			buf = new BufferedReader(new InputStreamReader(input));
-			read();
-			String sentence = "";
-			while (!"#".equals(sentence)) {
-				System.out.println("\n==> Enter your message (# to end connection):");
-				sentence = inFromUser.readLine();
-				write(sentence);
 
+			read();
+			String sentence = "Hello";
+			for (int i = 0; i < 2; i++) {
+				System.out.println("\n==> Enter your message (# to end connection):");
+				write(sentence + i);
 				read();
 			}
 
@@ -54,12 +52,12 @@ public class Main {
 		}
 	}
 
-	private static void write(String s) throws IOException {
+	private void write(String s) throws IOException {
 		System.out.println("Client: " + s);
 		osw.write(s + "\0");
 		osw.flush();
 	}
-	private static String read() throws IOException {
+	private String read() throws IOException {
 		char[] responseLine = new char[BUF_SIZE];
 		buf.read(responseLine);
 		String result = new String(responseLine).trim();
